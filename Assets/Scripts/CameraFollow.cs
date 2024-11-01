@@ -16,7 +16,7 @@ public class FollowCharacter : MonoBehaviour
 
     // New variables for pitch limits
     public float minPitch = -20f;      // Minimum angle to look down
-    public float maxPitch = 60f;       // Maximum angle to look up
+    public float maxPitch = 40f;       // Maximum angle to look up
 
     private void Start()
     {
