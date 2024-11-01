@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Combat.sln"
+    "dotnet.defaultSolution": "CombatDesign.sln"
 }

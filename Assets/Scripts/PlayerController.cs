@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public float playerSpeed = 2f;
     public float jumpForce = 5f;
 
+
+
     [SerializeField] private Renderer charRenderer;
 
     private float _horizontal;
@@ -42,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawRay(transform.position, -Vector3.up * 1f);
+        Gizmos.DrawSphere(GetBottomPoint(), 0.2f);
     }
 
     private void MoveCharacter()
@@ -60,12 +62,28 @@ public class PlayerController : MonoBehaviour
         // Combine input with camera directions
         var movement = (forward * _vertical + right * _horizontal).normalized * playerSpeed * Time.deltaTime;
         transform.position += movement;
+
+        if (!IsGrounded())
+        {
+
+            if (movement.sqrMagnitude > 0.001f)
+            {
+                AnimationManager.instance.ChangeState(AnimationManager.instance.WALK);
+            }
+            else
+            {
+
+                AnimationManager.instance.ChangeState(AnimationManager.instance.IDLE);
+            }
+        }
     }
 
     private void JumpToDirection()
     {
         if (IsGrounded() && Input.GetButtonDown("Jump"))
         {
+
+            AnimationManager.instance.ChangeState(AnimationManager.instance.JUMP);
             // Get the direction based on input
             var jumpDirection = new Vector3(_horizontal, 0, _vertical);
 
@@ -80,8 +98,12 @@ public class PlayerController : MonoBehaviour
             else
             {
                 // Default to straight upward jump if no input
-                jumpDirection = Vector3.up;
+                jumpDirection = Vector3.forward;
+                jumpDirection = cameraTransform.TransformDirection(jumpDirection);
+                jumpDirection.y = 0;
+                jumpDirection.Normalize();
             }
+
 
             // Apply the jump force in the computed direction
             _rb.AddForce((jumpDirection * 2 + Vector3.up) * jumpForce, ForceMode.Impulse);
@@ -92,7 +114,7 @@ public class PlayerController : MonoBehaviour
     private bool IsGrounded()
     {
         // Define the radius for the sphere check. Adjust it based on your character's size.
-        var groundCheckRadius = 0.3f;
+        var groundCheckRadius = 0.2f;
         // Position the ground check at the character's feet.
         var groundCheckPosition = GetBottomPoint();
 
