@@ -7,10 +7,10 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed = 10f;
     public float playerSpeed = 2f;
     public float jumpForce = 5f;
+    private bool isJumping = false;
 
 
 
-    [SerializeField] private Renderer charRenderer;
 
     private float _horizontal;
     private Rigidbody _rb;
@@ -31,20 +31,28 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _horizontal = Input.GetAxis("Horizontal");
-        _vertical = Input.GetAxis("Vertical");
+        _horizontal = Input.GetAxisRaw("Horizontal");
+        _vertical = Input.GetAxisRaw("Vertical");
 
         if (IsGrounded())
         {
-            MakeRotation();
-            MoveCharacter();
+            if (isJumping)
+            {
+                isJumping = false;
+            }
+            else if (!isJumping && _rb.velocity.y <= 0.001f)  // Checks for landing
+            {
+                MakeRotation();
+                MoveCharacter();
+            }
         }
     }
 
 
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(GetBottomPoint(), 0.2f);
+        Gizmos.DrawSphere(GetBottomPoint(), 0.1f);
     }
 
     private void MoveCharacter()
@@ -63,18 +71,19 @@ public class PlayerController : MonoBehaviour
         var movement = (forward * _vertical + right * _horizontal).normalized * playerSpeed * Time.deltaTime;
         transform.position += movement;
 
-        if (!IsGrounded())
+
+        if (movement.sqrMagnitude > 0.001f)
+        {
+            AnimationManager.instance.StartRunning();
+
+        }
+        else
         {
 
-            if (movement.sqrMagnitude > 0.001f)
-            {
-                AnimationManager.instance.ChangeState(AnimationManager.instance.WALK);
-            }
-            else
-            {
+            AnimationManager.instance.StopRunning();
 
-                AnimationManager.instance.ChangeState(AnimationManager.instance.IDLE);
-            }
+
+
         }
     }
 
@@ -82,6 +91,7 @@ public class PlayerController : MonoBehaviour
     {
         if (IsGrounded() && Input.GetButtonDown("Jump"))
         {
+            isJumping = true;
 
             AnimationManager.instance.ChangeState(AnimationManager.instance.JUMP);
             // Get the direction based on input
@@ -106,7 +116,7 @@ public class PlayerController : MonoBehaviour
 
 
             // Apply the jump force in the computed direction
-            _rb.AddForce((jumpDirection * 2 + Vector3.up) * jumpForce, ForceMode.Impulse);
+            _rb.AddForce((jumpDirection * 1 + Vector3.up) * jumpForce, ForceMode.Impulse);
         }
     }
 
@@ -114,7 +124,7 @@ public class PlayerController : MonoBehaviour
     private bool IsGrounded()
     {
         // Define the radius for the sphere check. Adjust it based on your character's size.
-        var groundCheckRadius = 0.2f;
+        var groundCheckRadius = 0.1f;
         // Position the ground check at the character's feet.
         var groundCheckPosition = GetBottomPoint();
 
@@ -125,9 +135,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 GetBottomPoint()
     {
-        var bounds = charRenderer.bounds;
-        return new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+        Collider col = GetComponent<Collider>();
+        return col.bounds.center - new Vector3(0, col.bounds.extents.y, 0);
     }
+
 
     private void MakeRotation()
     {
