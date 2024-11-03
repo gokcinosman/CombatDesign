@@ -6,8 +6,10 @@ public class PlayerController : MonoBehaviour
 
     public float rotationSpeed = 10f;
     public float playerSpeed = 2f;
-    public float jumpForce = 5f;
+    public float jumpForce = 6f;
     private bool isJumping = false;
+    public float upwardForce = 0.8f;
+    public float forwardForce = 0.8f;
 
 
 
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviour
             if (isJumping)
             {
                 isJumping = false;
+
             }
             else if (!isJumping && _rb.velocity.y <= 0.001f)  // Checks for landing
             {
@@ -52,7 +55,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(GetBottomPoint(), 0.1f);
+        Gizmos.DrawSphere(GetBottomPoint(), 0.05f);
     }
 
     private void MoveCharacter()
@@ -93,7 +96,7 @@ public class PlayerController : MonoBehaviour
         {
             isJumping = true;
 
-            AnimationManager.instance.ChangeState(AnimationManager.instance.JUMP);
+            AnimationManager.instance.StartJump();
             // Get the direction based on input
             var jumpDirection = new Vector3(_horizontal, 0, _vertical);
 
@@ -116,7 +119,7 @@ public class PlayerController : MonoBehaviour
 
 
             // Apply the jump force in the computed direction
-            _rb.AddForce((jumpDirection * 1 + Vector3.up) * jumpForce, ForceMode.Impulse);
+            _rb.AddForce((jumpDirection * forwardForce + Vector3.up * upwardForce) * jumpForce, ForceMode.Impulse);
         }
     }
 
@@ -124,7 +127,7 @@ public class PlayerController : MonoBehaviour
     private bool IsGrounded()
     {
         // Define the radius for the sphere check. Adjust it based on your character's size.
-        var groundCheckRadius = 0.1f;
+        var groundCheckRadius = 0.05f;
         // Position the ground check at the character's feet.
         var groundCheckPosition = GetBottomPoint();
 

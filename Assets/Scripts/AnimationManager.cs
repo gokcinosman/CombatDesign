@@ -68,13 +68,32 @@ public class AnimationManager : MonoBehaviour
     public void StartRunning()
     {
         SetLayerWeight("Running", true);
-        animator.CrossFade(RUN, 0.001f);
+        animator.CrossFade(RUN, 0.03f);
+
     }
 
     public void StopRunning()
     {
         SetLayerWeight("Running", false);
-        animator.CrossFade(IDLE, 0.05f);
+        SetlayerWeightIdle();
+        animator.CrossFade(IDLE, 0.04f);
+
+    }
+    public void StartJump()
+    {
+        SetLayerWeight("Jumping", true);
+        animator.CrossFade(JUMP, 0.003f);
+    }
+    public void StopJump()
+    {
+        SetLayerWeight("Jumping", false);
+        SetlayerWeightIdle();
+        animator.CrossFade(IDLE, 0.04f);
+    }
+    public void SetlayerWeightIdle()
+    {
+        SetLayerWeight("Idle", true);
     }
 }
+
 

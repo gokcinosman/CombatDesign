@@ -399,8 +399,9 @@ MonoBehaviour:
   cameraTransform: {fileID: 963194228}
   rotationSpeed: 10
   playerSpeed: 5
-  jumpForce: 5
-  charRenderer: {fileID: 1440179131}
+  jumpForce: 16
+  upwardForce: 0.3
+  forwardForce: 0.5
 --- !u!136 &859762169
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -869,11 +870,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 950522878}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!137 &1440179131 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 6148737315974723067, guid: c9f97915a9b2d9a42a48c961014edfd7, type: 3}
-  m_PrefabInstance: {fileID: 1748017824}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1748017824
 PrefabInstance:
   m_ObjectHideFlags: 0
