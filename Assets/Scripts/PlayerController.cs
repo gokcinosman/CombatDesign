@@ -7,16 +7,14 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed = 10f;
     public float playerSpeed = 2f;
     public float jumpForce = 6f;
-    private bool isJumping = false;
     public float upwardForce = 0.8f;
     public float forwardForce = 0.8f;
-
-
 
 
     private float _horizontal;
     private Rigidbody _rb;
     private float _vertical;
+    private bool isJumping;
 
     private void Start()
     {
@@ -41,16 +39,14 @@ public class PlayerController : MonoBehaviour
             if (isJumping)
             {
                 isJumping = false;
-
             }
-            else if (!isJumping && _rb.velocity.y <= 0.001f)  // Checks for landing
+            else if (!isJumping && _rb.velocity.y <= 0.001f) // Checks for landing
             {
                 MakeRotation();
                 MoveCharacter();
             }
         }
     }
-
 
 
     private void OnDrawGizmos()
@@ -76,18 +72,9 @@ public class PlayerController : MonoBehaviour
 
 
         if (movement.sqrMagnitude > 0.001f)
-        {
-            AnimationManager.instance.StartRunning();
-
-        }
+            AnimationManager.instance.ChangeState(AnimationManager.instance.RUN);
         else
-        {
-
-            AnimationManager.instance.StopRunning();
-
-
-
-        }
+            AnimationManager.instance.ChangeState(AnimationManager.instance.IDLE, 0.3f);
     }
 
     private void JumpToDirection()
@@ -96,7 +83,8 @@ public class PlayerController : MonoBehaviour
         {
             isJumping = true;
 
-            AnimationManager.instance.StartJump();
+            AnimationManager.instance.ChangeState(AnimationManager.instance.JUMP); // Smooth transition
+
             // Get the direction based on input
             var jumpDirection = new Vector3(_horizontal, 0, _vertical);
 
@@ -138,7 +126,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 GetBottomPoint()
     {
-        Collider col = GetComponent<Collider>();
+        var col = GetComponent<Collider>();
         return col.bounds.center - new Vector3(0, col.bounds.extents.y, 0);
     }
 
